@@ -17,15 +17,11 @@ const getElementsByXPath = (xpath, parent) => {
   return results;
 };
 
-const addCopyButton = () => {
-  setTimeout(() => {
-    var allElements = getElementsByXPath(`//div[contains(@class, 'vpl_show_hide_content')][2]/div/pre/i`);
-
-    allElements.forEach((elem, i) => {
-      let btn = document.createElement('button');
-      btn.name = `copyBtn${i}`;
-      btn.innerHTML = "Copy";
-      btn.style = `
+const insertButtonToElement = (elem, i) => {
+  let btn = document.createElement('button');
+  btn.name = `copyBtn${i}`;
+  btn.innerHTML = "Copy";
+  btn.style = `
 appearance: none;
 background-color: #FAFBFC;
 border: 1px solid rgba(27, 31, 35, 0.15);
@@ -49,18 +45,28 @@ touch-action: manipulation;
 vertical-align: middle;
 white-space: nowrap;
 word-wrap: break-word;
-        `
-      btn.classList.add('button-3');
+    `
+  btn.classList.add('button-3');
 
-      elem.before(btn);
+  elem.before(btn);
 
-      btn.addEventListener('click', (e) => {
-        var nextInfoElem = document.getElementsByName(e.target.name)[0].nextElementSibling;
-        copyDivToClipboard(nextInfoElem);
-      });
+  btn.addEventListener('click', (e) => {
+    var nextInfoElem = document.getElementsByName(e.target.name)[0].nextElementSibling;
+    copyDivToClipboard(nextInfoElem);
+  });
+}
 
-    });
-  }, 1000);
+const addCopyButton = () => {
+  setTimeout(() => {
+    const maxDivElementsToApply = 3;
+
+    for (let j = 1; j < maxDivElementsToApply; j++) {
+      const allDivElements = getElementsByXPath(`//div[contains(@class, 'vpl_show_hide_content')][${j}]/div/pre/i`);
+
+      allDivElements.forEach((elem, i) => insertButtonToElement(elem, i));
+    }
+
+  }, 3000);
 }
 
 addCopyButton();
